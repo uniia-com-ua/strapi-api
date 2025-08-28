@@ -1,3 +1,7 @@
+import type { Config as AppVersionConfig } from 'strapi-plugin-app-version/dist/server/src/config'
+
+import packageJson from '../package.json'
+
 export default ({ env }) => ({
     email: {
         config: {
@@ -11,5 +15,11 @@ export default ({ env }) => ({
             defaultReplyTo: 'support@uniia.com.ua',
           },
         },
-      }
+      },
+      'app-version': {
+        enabled: true,
+        config: {
+        version: packageJson.version,
+        } satisfies AppVersionConfig,
+    },
 });
