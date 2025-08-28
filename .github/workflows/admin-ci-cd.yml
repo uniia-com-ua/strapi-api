@@ -1,0 +1,167 @@
+name: Strapi API - Docker CI/CD with Fleet
+
+on:
+  release:
+    types: [published]
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+
+      - name: Derive version from release tag
+        id: meta
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          
+          # Для Strapi API використовуємо стандартні версії (v1.0.0, v1.2.3, тощо)
+          if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            VERSION="${TAG#v}"
+          else
+            echo "Unsupported release tag format: $TAG. Use semantic versioning like v1.0.0"
+            exit 1
+          fi
+
+          SERVICE="strapi-api"
+          IMAGE_NAME="strapi-api"
+          FLEET_PATH="fleet"
+          TITLE="Strapi API"
+          DESC="UNIIA Strapi Content Management System API"
+
+          {
+            echo "SERVICE=$SERVICE"
+            echo "VERSION=$VERSION"
+            echo "IMAGE_NAME=$IMAGE_NAME"
+            echo "FLEET_PATH=$FLEET_PATH"
+            echo "TITLE=$TITLE"
+            echo "DESC=$DESC"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Release tag: $TAG"
+          echo "Service: $SERVICE"
+          echo "Version: $VERSION"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Strapi
+        run: npm run build
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/uniia-com-ua/${{ steps.meta.outputs.IMAGE_NAME }}:${{ steps.meta.outputs.VERSION }}
+            ${{ env.REGISTRY }}/uniia-com-ua/${{ steps.meta.outputs.IMAGE_NAME }}:latest
+          labels: |
+            org.opencontainers.image.title=${{ steps.meta.outputs.TITLE }}
+            org.opencontainers.image.description=${{ steps.meta.outputs.DESC }}
+            org.opencontainers.image.version=${{ steps.meta.outputs.VERSION }}
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Update Fleet configuration
+        run: |
+          echo "🚀 Оновлюємо Fleet конфігурацію для ${{ steps.meta.outputs.TITLE }}..."
+          echo "📦 Реліз: ${{ github.event.release.name }}"
+          echo "🏷️  Тег: ${{ github.event.release.tag_name }}"
+          echo "📝 Версія: ${{ steps.meta.outputs.VERSION }}"
+
+          git status
+          git branch -a
+
+          sed -i "s/newTag: .*/newTag: ${{ steps.meta.outputs.VERSION }}/" ${{ steps.meta.outputs.FLEET_PATH }}/kustomization.yaml
+          sed -i "s/APP_VERSION: .*/APP_VERSION: \"${{ steps.meta.outputs.VERSION }}\"/" ${{ steps.meta.outputs.FLEET_PATH }}/configmap.yaml
+
+          echo "Зміни в Fleet конфігурації:"
+          echo "=== kustomization.yaml ==="
+          git diff ${{ steps.meta.outputs.FLEET_PATH }}/kustomization.yaml
+          echo "=== configmap.yaml ==="
+          git diff ${{ steps.meta.outputs.FLEET_PATH }}/configmap.yaml
+
+      - name: Commit and push Fleet changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          git add ${{ steps.meta.outputs.FLEET_PATH }}/kustomization.yaml ${{ steps.meta.outputs.FLEET_PATH }}/configmap.yaml
+
+          if git diff --staged --quiet; then
+            echo "Немає змін для коміту"
+            exit 0
+          else
+            echo "Комітимо зміни..."
+            git commit -m "🚀 [${{ steps.meta.outputs.TITLE }}] Реліз ${{ github.event.release.tag_name }}
+
+            Оновлено Fleet конфігурацію до версії ${{ steps.meta.outputs.VERSION }}
+
+            📦 Образ: ${{ env.REGISTRY }}/uniia-com-ua/${{ steps.meta.outputs.IMAGE_NAME }}:${{ steps.meta.outputs.VERSION }}
+            🔧 ConfigMap: Версія APP_VERSION = ${{ steps.meta.outputs.VERSION }}
+            🏷️  Реліз: ${{ github.event.release.name }}
+            🔗 Посилання: ${{ github.event.release.html_url }}
+
+            Strapi API тепер доступне через оновлену версію у Kubernetes кластері"
+            git push origin main
+            echo "✅ Fleet конфігурацію оновлено та відправлено в репозиторій"
+          fi
+
+      - name: Update release with deployment info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const releaseBody = context.payload.release.body || '';
+            const deploymentInfo = `
+
+            ## 🚀 Deployment Info
+            - **Docker Image**: \`${{ env.REGISTRY }}/uniia-com-ua/${{ steps.meta.outputs.IMAGE_NAME }}:${{ steps.meta.outputs.VERSION }}\`
+            - **App Version (ENV)**: \`${{ steps.meta.outputs.VERSION }}\`
+            - **Strapi Admin Panel**: cms.uniia.com.ua
+            - **Fleet Configuration**: Updated automatically
+            - **Deployment Status**: ✅ Ready for Fleet sync
+
+            _Auto-deployed via GitHub Actions_`;
+
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: context.payload.release.id,
+              body: releaseBody + deploymentInfo
+            });
+
+      - name: Summary
+        run: |
+          echo "🎉 ${{ steps.meta.outputs.TITLE }} успішно зібрано та розгорнуто!"
+          echo "📦 Образ: ${{ env.REGISTRY }}/uniia-com-ua/${{ steps.meta.outputs.IMAGE_NAME }}:${{ steps.meta.outputs.VERSION }}"
+          echo "🔧 APP_VERSION env: ${{ steps.meta.outputs.VERSION }}"
+          echo "🏷️  Реліз: ${{ github.event.release.tag_name }}"
+          echo "🔗 Посилання на реліз: ${{ github.event.release.html_url }}"
+          echo "🌐 Strapi Admin Panel буде доступна після розгортання"
+          echo "🚀 Fleet автоматично розгорне нову версію в кластері"
