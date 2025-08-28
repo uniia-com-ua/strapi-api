@@ -53,17 +53,15 @@ jobs:
           echo "Service: $SERVICE"
           echo "Version: $VERSION"
 
-      - name: Setup Node.js
+      - name: Setup Node.js (for version bump only)
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Strapi
-        run: npm run build
+      - name: Update package.json version
+        run: |
+          echo "Bumping package.json to ${{ steps.meta.outputs.VERSION }}"
+          npm version ${{ steps.meta.outputs.VERSION }} --no-git-tag-version --allow-same-version
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
@@ -112,7 +110,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-          git add ${{ steps.meta.outputs.FLEET_PATH }}/kustomization.yaml ${{ steps.meta.outputs.FLEET_PATH }}/configmap.yaml
+          git add ${{ steps.meta.outputs.FLEET_PATH }}/kustomization.yaml ${{ steps.meta.outputs.FLEET_PATH }}/configmap.yaml package.json package-lock.json
 
           if git diff --staged --quiet; then
             echo "Немає змін для коміту"
