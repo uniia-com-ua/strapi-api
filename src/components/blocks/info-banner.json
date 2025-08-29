@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_blocks_info_banners",
+  "info": {
+    "displayName": "info-banner",
+    "icon": "monitor"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "Карбуй освіту"
+    },
+    "subtitle": {
+      "type": "text",
+      "default": "Перша онлайн-платформа для студентів українських університетів"
+    },
+    "Buttons": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

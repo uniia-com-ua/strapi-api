@@ -1,0 +1,46 @@
+{
+  "collectionName": "components_shared_buttons",
+  "info": {
+    "displayName": "Button",
+    "icon": "cursor"
+  },
+  "options": {},
+  "attributes": {
+    "Label": {
+      "type": "string",
+      "default": "Кнопка",
+      "required": true
+    },
+    "variant": {
+      "type": "enumeration",
+      "required": false,
+      "default": "contained",
+      "enum": [
+        "contained",
+        "outlined",
+        "text"
+      ]
+    },
+    "size": {
+      "type": "enumeration",
+      "default": "medium",
+      "enum": [
+        "small",
+        "medium",
+        "large"
+      ]
+    },
+    "rounded": {
+      "type": "boolean",
+      "default": false
+    },
+    "isGlass": {
+      "type": "boolean",
+      "default": false
+    },
+    "sx": {
+      "type": "json"
+    }
+  },
+  "config": {}
+}

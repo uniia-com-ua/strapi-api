@@ -1,14 +1,47 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface BlocksInfoBanner extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_info_banners';
+  info: {
+    displayName: 'info-banner';
+    icon: 'monitor';
+  };
+  attributes: {
+    Buttons: Schema.Attribute.Component<'shared.button', true>;
+    subtitle: Schema.Attribute.Text &
+      Schema.Attribute.DefaultTo<'\u041F\u0435\u0440\u0448\u0430 \u043E\u043D\u043B\u0430\u0439\u043D-\u043F\u043B\u0430\u0442\u0444\u043E\u0440\u043C\u0430 \u0434\u043B\u044F \u0441\u0442\u0443\u0434\u0435\u043D\u0442\u0456\u0432 \u0443\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0438\u0445 \u0443\u043D\u0456\u0432\u0435\u0440\u0441\u0438\u0442\u0435\u0442\u0456\u0432'>;
+    title: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'\u041A\u0430\u0440\u0431\u0443\u0439 \u043E\u0441\u0432\u0456\u0442\u0443'>;
+  };
+}
+
+export interface SharedButton extends Struct.ComponentSchema {
+  collectionName: 'components_shared_buttons';
+  info: {
+    displayName: 'Button';
+    icon: 'cursor';
+  };
+  attributes: {
+    isGlass: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    Label: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'\u041A\u043D\u043E\u043F\u043A\u0430'>;
+    rounded: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    size: Schema.Attribute.Enumeration<['small', 'medium', 'large']> &
+      Schema.Attribute.DefaultTo<'medium'>;
+    sx: Schema.Attribute.JSON;
+    variant: Schema.Attribute.Enumeration<['contained', 'outlined', 'text']> &
+      Schema.Attribute.DefaultTo<'contained'>;
+  };
+}
+
 export interface SharedMedia extends Struct.ComponentSchema {
   collectionName: 'components_shared_media';
   info: {
     displayName: 'Media';
     icon: 'file-video';
   };
-  attributes: {
-    file: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
-  };
+  attributes: {};
 }
 
 export interface SharedQuote extends Struct.ComponentSchema {
@@ -65,6 +98,8 @@ export interface SharedSlider extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'blocks.info-banner': BlocksInfoBanner;
+      'shared.button': SharedButton;
       'shared.media': SharedMedia;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;
