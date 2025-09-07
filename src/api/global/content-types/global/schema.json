@@ -58,6 +58,16 @@
       },
       "component": "shared.seo",
       "repeatable": false
+    },
+    "appBar": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "shared.app-bar",
+      "repeatable": false
     }
   }
 }
