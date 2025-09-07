@@ -6,10 +6,14 @@
   },
   "options": {},
   "attributes": {
-    "Label": {
+    "label": {
       "type": "string",
       "default": "Кнопка",
       "required": true
+    },
+    "link": {
+      "type": "string",
+      "default": "/"
     },
     "variant": {
       "type": "enumeration",

@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_shared_app_bars",
+  "info": {
+    "displayName": "App Bar",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "Tabs": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": true
+    },
+    "LoginButton": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

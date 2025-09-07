@@ -15,6 +15,18 @@ export interface BlocksInfoBanner extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedAppBar extends Struct.ComponentSchema {
+  collectionName: 'components_shared_app_bars';
+  info: {
+    displayName: 'App Bar';
+    icon: 'bulletList';
+  };
+  attributes: {
+    LoginButton: Schema.Attribute.Component<'shared.button', false>;
+    Tabs: Schema.Attribute.Component<'shared.button', true>;
+  };
+}
+
 export interface SharedButton extends Struct.ComponentSchema {
   collectionName: 'components_shared_buttons';
   info: {
@@ -23,9 +35,10 @@ export interface SharedButton extends Struct.ComponentSchema {
   };
   attributes: {
     isGlass: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    Label: Schema.Attribute.String &
+    label: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'\u041A\u043D\u043E\u043F\u043A\u0430'>;
+    link: Schema.Attribute.String & Schema.Attribute.DefaultTo<'/'>;
     rounded: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     size: Schema.Attribute.Enumeration<['small', 'medium', 'large']> &
       Schema.Attribute.DefaultTo<'medium'>;
@@ -99,6 +112,7 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'blocks.info-banner': BlocksInfoBanner;
+      'shared.app-bar': SharedAppBar;
       'shared.button': SharedButton;
       'shared.media': SharedMedia;
       'shared.quote': SharedQuote;
