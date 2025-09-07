@@ -63,6 +63,21 @@ jobs:
           echo "Bumping package.json to ${{ steps.meta.outputs.VERSION }}"
           npm version ${{ steps.meta.outputs.VERSION }} --no-git-tag-version --allow-same-version
 
+      - name: Generate TS types file
+        run: npm run generate:types
+        env:
+          GITHUB_RELEASE_URL: ${{ github.event.release.html_url }}
+
+      - name: Upload generated.ts to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: types/generated/generated.ts
+          asset_name: generated.ts
+          asset_content_type: text/plain
+
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
