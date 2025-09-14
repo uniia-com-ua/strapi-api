@@ -23,7 +23,10 @@
         }
       },
       "components": [
-        "blocks.info-banner"
+        "blocks.info-banner",
+        "blocks.about-us",
+        "blocks.our-team",
+        "blocks.info-card"
       ]
     }
   }

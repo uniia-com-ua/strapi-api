@@ -41,6 +41,21 @@ export interface BlocksInfoCard extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksOurTeam extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_our_teams';
+  info: {
+    displayName: 'our-team';
+  };
+  attributes: {
+    card: Schema.Attribute.Component<'blocks.info-card', false>;
+    Media: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface SharedAppBar extends Struct.ComponentSchema {
   collectionName: 'components_shared_app_bars';
   info: {
@@ -140,6 +155,7 @@ declare module '@strapi/strapi' {
       'blocks.about-us': BlocksAboutUs;
       'blocks.info-banner': BlocksInfoBanner;
       'blocks.info-card': BlocksInfoCard;
+      'blocks.our-team': BlocksOurTeam;
       'shared.app-bar': SharedAppBar;
       'shared.button': SharedButton;
       'shared.media': SharedMedia;

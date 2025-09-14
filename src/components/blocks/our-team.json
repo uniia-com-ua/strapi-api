@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_blocks_our_teams",
+  "info": {
+    "displayName": "our-team"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "Media": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "card": {
+      "type": "component",
+      "component": "blocks.info-card",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

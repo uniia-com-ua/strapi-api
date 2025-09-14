@@ -621,7 +621,14 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
     };
   };
   attributes: {
-    Blocks: Schema.Attribute.DynamicZone<['blocks.info-banner']> &
+    Blocks: Schema.Attribute.DynamicZone<
+      [
+        'blocks.info-banner',
+        'blocks.about-us',
+        'blocks.our-team',
+        'blocks.info-card',
+      ]
+    > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
