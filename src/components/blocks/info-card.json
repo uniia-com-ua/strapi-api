@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_blocks_info_cards",
+  "info": {
+    "displayName": "info-card"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "media": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "videos"
+      ]
+    },
+    "Buttons": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": true
+    },
+    "sx": {
+      "type": "json"
+    }
+  },
+  "config": {}
+}

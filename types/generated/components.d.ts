@@ -1,5 +1,16 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface BlocksAboutUs extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_about_uses';
+  info: {
+    displayName: 'about-us';
+  };
+  attributes: {
+    Cards: Schema.Attribute.Component<'blocks.info-card', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface BlocksInfoBanner extends Struct.ComponentSchema {
   collectionName: 'components_blocks_info_banners';
   info: {
@@ -7,11 +18,26 @@ export interface BlocksInfoBanner extends Struct.ComponentSchema {
     icon: 'monitor';
   };
   attributes: {
+    background: Schema.Attribute.Media<'images'>;
     Buttons: Schema.Attribute.Component<'shared.button', true>;
     subtitle: Schema.Attribute.Text &
       Schema.Attribute.DefaultTo<'\u041F\u0435\u0440\u0448\u0430 \u043E\u043D\u043B\u0430\u0439\u043D-\u043F\u043B\u0430\u0442\u0444\u043E\u0440\u043C\u0430 \u0434\u043B\u044F \u0441\u0442\u0443\u0434\u0435\u043D\u0442\u0456\u0432 \u0443\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0438\u0445 \u0443\u043D\u0456\u0432\u0435\u0440\u0441\u0438\u0442\u0435\u0442\u0456\u0432'>;
     title: Schema.Attribute.String &
       Schema.Attribute.DefaultTo<'\u041A\u0430\u0440\u0431\u0443\u0439 \u043E\u0441\u0432\u0456\u0442\u0443'>;
+  };
+}
+
+export interface BlocksInfoCard extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_info_cards';
+  info: {
+    displayName: 'info-card';
+  };
+  attributes: {
+    Buttons: Schema.Attribute.Component<'shared.button', true>;
+    description: Schema.Attribute.RichText;
+    media: Schema.Attribute.Media<'images' | 'videos'>;
+    sx: Schema.Attribute.JSON;
+    title: Schema.Attribute.String;
   };
 }
 
@@ -111,7 +137,9 @@ export interface SharedSlider extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'blocks.about-us': BlocksAboutUs;
       'blocks.info-banner': BlocksInfoBanner;
+      'blocks.info-card': BlocksInfoCard;
       'shared.app-bar': SharedAppBar;
       'shared.button': SharedButton;
       'shared.media': SharedMedia;

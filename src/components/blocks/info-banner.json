@@ -14,6 +14,14 @@
       "type": "text",
       "default": "Перша онлайн-платформа для студентів українських університетів"
     },
+    "background": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
     "Buttons": {
       "type": "component",
       "component": "shared.button",
